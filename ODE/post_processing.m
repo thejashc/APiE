@@ -104,18 +104,26 @@ elseif (friction == 1 && forcing == 1)
     %% post processing with both friction and forcing
     % analytical solutions for position and velocity
     phi = atan((gamma/m)*omg/(omg0^2 - omg^2));
-    x_anal = (fmag/m)*(1/( (omg0^2 - omg^2)^2 + (omg*(gamma/m))^2 )^(1/2))*cos(omg*t - phi);
+    Amp = (fmag/m)*(1/( (omg0^2 - omg^2)^2 + (omg*(gamma/m))^2 )^(1/2));
+    x_anal = Amp*cos(omg*t - phi);
     
-    % position
-    figure(1)
-    plot(t,x,'k.');
-    hold on;
-    plot(t,x_anal, 'r')
+    % write data to a file
+    fname = ['./data/A_f_omg_omg0_gamma_',num2str(gamma),'_m_',num2str(m),'.dat'];
+    fileID = fopen(fname,'a');
+    fmt = '%6f %6f %6f %6f\n';
+    fprintf(fileID,fmt, [Amp fmag omg omg0]);
+    fclose(fileID);
     
-    % velocity
-    figure(2)
-    plot(t,v,'k.');
-    hold on;
+    %     % position
+    %     figure(1)
+    %     plot(t,x,'k.');
+    %     hold on;
+    %     plot(t,x_anal, 'r')
+    %
+    %     % velocity
+    %     figure(2)
+    %     plot(t,v,'k.');
+    %     hold on;
 end
 
 end
