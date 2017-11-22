@@ -21,4 +21,3 @@ plot(Y(:,3),Y(:,1)./Y(:,2),'b.')
 plot(Y(ind,3),A_omg(2, Y(ind,3)), 'bo')
 plot(Z(:,3),Z(:,1)./Z(:,2),'g.')
 plot(Z(ind,3), A_omg(0.5, Z(ind,3)), 'go')
-
