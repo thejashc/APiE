@@ -4,24 +4,25 @@ clc; clearvars;
 global A x0 v0 omg0 k m gamma friction forcing fmag omg
 
 factor = 0.01:0.001:5;
+factor = 1;
 
 for expt = 1:length(factor)
     % parameters
-    prd = 20;           % number of periods to simulate
-    n = 10000;          % number of intervals
+    prd = 5;            % number of periods to simulate
+    n = 100000;         % number of intervals
     A = 1;              % Amplitude
     k = 5;              % Spring constant
     m = 2;              % mass
     omg0 = sqrt(k/m);   % natural frequency
     T = 2*pi*prd/omg0;  % Total time
     typT = 2*pi/omg0;
-    friction = 1;
-    gamma = 0.5;               % friction coefficient
-    forcing = 1;
+    friction = 0;
+    gamma = 1e-4;               % friction coefficient
+    forcing = 0;
     fmag = 1.0;                % magnitude of force
     omg = factor(expt)*omg0;   % frequency of forcing
     
-    opt = 4;
+    opt = 1;
     
     % initialize arrays & initial values
     t = linspace(0,T,n);
