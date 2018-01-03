@@ -17,6 +17,7 @@ if (friction == 0 && forcing == 0)
     plot(t(ind),x(ind),'ko');
     plot(t,x_anal,'r.');
     plot(t(ind), x_anal_handpick, 'ko','MarkerFaceColor','k')
+    %csvwrite('./data/q5_euler_dt_2e-2_position_vs_time.dat',[t', x]);
     
     % velocity
     figure(2)
@@ -38,7 +39,10 @@ if (friction == 0 && forcing == 0)
     plot(t,tot);
     plot(t,E_init)
     legend('Potential','Kinetic','Total','Initial')
-    
+    %csvwrite('./data/q11_ode45_energy_vs_time.dat',[t, kin, pot, tot]);
+    %csvwrite('./data/q11_verletLF_energy_vs_time.dat',[t', kin, pot, tot]);
+    csvwrite('./data/q11_euler_energy_vs_time.dat',[t', kin, pot, tot]);
+
     % plotting the phase-space plot for the spring mass system
     figure(4)
     a = sqrt((v0/omg0)^2 + (x0)^2);
@@ -50,6 +54,7 @@ if (friction == 0 && forcing == 0)
     axis square
     hold on;
     fplot(x_ellipse,y_ellipse)
+    %csvwrite('./data/q5_euler_dt_2e-2_phase_space.dat',[v, x]);
     
 elseif (friction == 1 && forcing == 0)
     %% post processing with friction

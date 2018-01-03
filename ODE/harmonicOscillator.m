@@ -8,8 +8,8 @@ factor = 1;
 
 for expt = 1:length(factor)
     % parameters
-    prd = 5;            % number of periods to simulate
-    n = 100000;         % number of intervals
+    prd = 5;           % number of periods to simulate
+    n = 10000;          % number of intervals
     A = 1;              % Amplitude
     k = 5;              % Spring constant
     m = 2;              % mass
@@ -68,6 +68,7 @@ for expt = 1:length(factor)
                 x(i+1) = x(i) + w(i+1)*DeltaT;
                 
                 % velocity calculation
+                %v(i) = w(i);
                 v(i) = (w(i+1)+w(i))/2;
                 
             elseif (friction == 1 && forcing == 0)
@@ -76,7 +77,9 @@ for expt = 1:length(factor)
                 %             fc = force(x(i));
                 %
                 %             % advance half-step velocity
-                %             w(i+1) = ((1 - gamma*DeltaT/(2*m))*w(i) + DeltaT*fc/m)/(1 + gamma*DeltaT/(2*m));
+                             a1 = (1 - gamma*DeltaT/(2*m))/(1 + gamma*DeltaT/(2*m));
+                             a2 = (DeltaT*fc/m)/(1 + gamma*DeltaT/(2*m));
+                             w(i+1) = a1*w(i) + a2;
                 %
                 %             % advance position
                 %             x(i+1) = x(i) + w(i+1)*DeltaT;
@@ -160,6 +163,7 @@ for expt = 1:length(factor)
         %% Runge-Kutta using ode45 function
     elseif (opt == 4)
         range = linspace(0,T,n);
+        %range = [0 T];
         z0 = [x0; v0];
         
         [t,z] = ode45(@integrator_friction, range, z0);
