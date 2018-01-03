@@ -1,5 +1,11 @@
 \documentclass[10pt]{article}
 \usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{color}
+\usepackage{bm}
+%\usepackage{epstopdf}
+
+\graphicspath{{../plots/}}
 
 \begin{document}
 \section*{Question 1}
@@ -15,7 +21,7 @@ Now, according to the \textbf{forward Euler} method the L.H.S of the above equat
 \frac{v(t + \Delta t) - v(t)}{\Delta t} &= \frac{F(x(t))}{m}.
 \end{align*}
 %
-Using the notation $t=i\Delta t$ where $\Delta t$ is the length of the interval between two consecutive time steps, and, $i$ is an integer $1\leq i \leq \mathrm{Maxstap}$. Substituting for $t$ gives the following expression:
+Using the notation $t=i\Delta t$ where $\Delta t$ is the length of the interval between two consecutive time steps, and, $i$ is an integer $1\leq i \leq \mathrm{Maxstap}$. Substituting for $t$ gives the following expression:png
 %
 \begin{align*}
 x[i+1] &= x[i] + v[i]*\Delta t, \\
@@ -65,6 +71,7 @@ where $x_{0}, v_{0}$ are the initial conditions for the harmonic oscillator. Hen
 
 \begin{equation}
 \frac{x^2(t)}{a^2} + \frac{v^2(t)}{b^2} = 1,
+\label{eqn:phase_space_eqn}
 \end{equation}
 
 where,
@@ -77,21 +84,181 @@ b^2 =& v_{0}^2 + x_{0}^2 \omega_{0}^2.
 The oscillator has been simulated in MATLAB.
 
 \section*{Question 5}
+As stated in \textbf{Question 3} we test for the following criterion:
+\begin{itemize}
+\item Energy conservation
+\item Analytical expression for $x(t)$ vs $t$
+\item Phase space of $x(t)$ vs $v(t)$.
+\end{itemize}
+\paragraph{Energy Conservation}: We compare the energy $E_{tot}(t)$ over several periods of the oscillator. As argued in \textbf{Question 3}, the system should not lose energy since only conservative forces are present in the system. 
 
+\begin{figure}[!htb]
+\centering
+\input{../plots/q5_euler_dt_2e-4_energy_vs_time.tex}
+\caption{The kinetic, potential and the total energy are plotted as a function of normalized time. The normalized time represents the number of periods executed by the harmonic oscillator. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$, $dt=2\times 10^{-4}t_{p}\ \mathrm{s}$. The forward Euler scheme is used for integrating the equations of motion.}
+\end{figure}
+
+\paragraph{Analytical expression}: We compare the position $x(t)$ over several periods of the oscillator. As argued in \textbf{Question 3}, the system should exactly follow the analytical expression for the position.
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q5_euler_dt_2e-4_position_vs_time.tex}
+\caption{The position of the harmonic oscillator as a function of normalized time is compared against the analytical expression. The normalized time represents the number of periods executed by the harmonic oscillator. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$, $dt=2\times 10^{-4}t_{p}\ \mathrm{s}$.The forward Euler scheme is used for integrating the equations of motion.}
+\end{figure}
+
+\paragraph{Phase space}: The phase space trajectory is plotted for the harmonic oscillator. As derived in Eqn \eqref{eqn:phase_space_eqn}, the points in the phase space must, strictly, lie on the ellipse for a given initial velocity and position. 
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q5_euler_dt_2e-4_phase_space.tex}
+\caption{The phase space trajectory of the harmonic oscillator is plotted. The $y$-axis contains the position $x(t)$ and the $x$-axis contains the velocity $v(t)$. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$, $dt=2\times 10^{-4}t_{p}\ \mathrm{s}$.The forward Euler scheme is used for integrating the equations of motion.}
+\end{figure}
 
 \section*{Question 6}
+In the previous section a small value of $dt$ was used for integrating the equations of motion. However, using larger time steps decreases the accuracy of the forward Euler method. This question focuses on showing this. 
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q6_euler_compare_dt_energy_vs_time.tex}
+\caption{The total energy of the oscillator is plotted as a function of normalized time for different time steps. The $y$-axis contains the position $E_{tot}(t)$ and the $x$-axis contains the velocity $\tilde{t}$. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$, $dt=2\times 10^{-4}t_{p}\ \mathrm{s}$.The forward Euler scheme is used for integrating the equations of motion.}
+\label{fig:euler_dt_compare}
+\end{figure}
+
+\begin{itemize}
+\item As can be seen in Fig. \ref{fig:euler_dt_compare}, the \emph{larger} the time step used for the forward Euler, the greater the error in predicting the total energy. As the time step becomes 
+\item Another interesting observation is that the forward Euler is an energy accumulating scheme, rather than energy-losing scheme. The derivation for this is shown in the appendix.
+\end{itemize}
 
 \section*{Question 7}
+The influence of the time step on the Verlet leap-frog scheme is plotted in Fig. \ref{fig:verletLF_dt_compare}. 
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q7_verletLF_compare_dt_energy_vs_time.tex}
+\caption{The total energy of the oscillator is plotted as a function of normalized time for different time steps. The $y$-axis contains the position $E_{tot}(t)$ and the $x$-axis contains the velocity $\tilde{t}$. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$, $dt=2\times 10^{-4}t_{p}\ \mathrm{s}$.The Verlet leap-frog scheme is used to integrate the equations of motion.}
+\label{fig:verletLF_dt_compare}
+\end{figure}
+
+It can be seen that the for large timesteps the scheme does not lose energy. Further, on inspecting the scheme for $dt=2\mathrm{e-}2$ we observe that the oscillator does not lose energy. This is in stark contrast to the Euler scheme which loses energy on using a larger time step. 
+
+Hence, it can be concluded that the performance of the integrator is less sensitive, when compared to the Euler scheme, to the magnitude of time step. On further decreasing the resolution (increasing the magnitude of $dt$) the magnitude of the oscillations of the energy increase. This is shown in Fig. \ref{fig:verletLF_dt_compare_oscillations}.
+
+\iffalse
+\begin{figure}[!htb]
+\centering
+\input{../plots/q7_verletLF_dt_oscillation_energy_vs_time.png}
+\caption{The total energy of the oscillator is plotted as a function of normalized time for different time steps. The $y$-axis contains the position $E_{tot}(t)$ and the $x$-axis contains the velocity $\tilde{t}$. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$, $dt=2\times 10^{-4}t_{p}\ \mathrm{s}$.The Verlet leap-frog scheme is used to integrate the equations of motion.}
+\label{fig:verletLF_dt_compare_oscillations}
+\end{figure}
+\fi
 
 \section*{Question 8}
+As mentioned, the position and calculated trajectory remains unaffected with the different interpretation of the velocity. Hence, the potential energy remains unchanged. However, the kinetic energy and also the total energy will depend on the method of calculation of the velocity at integral time steps. The difference in the total energy is shown in Fig. \ref{fig:verletLF_dt_compare_intermediate_velocities}. 
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q8_verletLF_compare_dt_energy_vs_time_intermediate_velocities.tex}
+\caption{The total energy of the oscillator is plotted as a function of normalized time for different velocity interpretations of the Verlet leap-frog scheme. The $y$-axis contains the position $E_{tot}(t)$ and the $x$-axis contains the velocity $\tilde{t}$. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$, $dt=2\times 10^{-4}t_{p}\ \mathrm{s}$.}
+\label{fig:verletLF_dt_compare_intermediate_velocities}
+\end{figure}
+
+As observed, the oscillations in the energy calculation are significantly suppressed when using the average of the intermediate velocities $w$ instead of directly adopting the value of $w$. It should be noted that the oscillations in the case of the average intermediate velocities are also present, however, the maximum amplitude of the oscillation is of the order of $10^{-6}$. 
 
 \section*{Question 9}
+The equations for $x((i+1)\Delta t)$ and $x((i-1)\Delta t)$ are given by:
+%
+\begin{eqnarray}
+x((i+1)\Delta t) &= x(i\Delta t) + v(i\Delta t) \Delta t + a(t) \frac{\Delta t^2}{2} + \mathcal{O}(\Delta t^3), \\
+x((i-1)\Delta t) &= x(i\Delta t) - v(i\Delta t) \Delta t + a(t) \frac{\Delta t^2}{2} - \mathcal{O}(\Delta t^3).
+\end{eqnarray}
+%
+Adding these two equations and rearranging terms gives us the Verlet scheme:
+\begin{equation}
+\boxed{x[i+1] = 2x[i] - x[i-1] + f[i]\frac{\Delta t^2}{m} + \mathcal{O}(\Delta t^4)},
+\end{equation}
+%
+where $x[i] = x(i\Delta t)$ and $f[i] = f(x[i]) = ma[i]$. It is important to note that the Verlet scheme is accurate upto $4^{th}$ order. In addition, the Verlet scheme in the standard form does not have a dependence on the velocity field. This dependence on the velocity field can be introduced through some basic manipulation. The steps leading up to the Verlet leap-frog is derived here. To do this we start from the position update equation for the leap-frog scheme. 
+
+\begin{equation}
+x[i+1] = x[i] + w[i+1]\Delta t \implies w[i+1] = \frac{x[i+1] - x[i]}{\Delta t}
+\end{equation}
+
+Similarly, 
+\begin{equation*}
+w[i] = \frac{x[i]-x[i-1]}{\Delta t}.
+\end{equation*}
+
+Inserting expressions for $w[i+1]$ and $w[i]$ into the equation for update of $w$:
+\begin{equation}
+w[i+1] = w[i] + f[i]\frac{\Delta t}{m},
+\end{equation}
+
+gives (with rearrangements):
+\begin{equation}
+x[i+1] = 2x[i] - x[i-1] + f[i]\frac{\Delta t^2}{m}. 
+\end{equation}
+
+Hence, the above equation is the same as the equation for the Verlet scheme. Therefore, the Verlet leap-frog scheme and the Verlet scheme are identical. The local truncation error of the leap-frog method is order 3. However, the global error is order 2. 
 
 \section*{Question 10}
+The array returned by the Matlab function \texttt{ode45} is not equally spaced in time. Hence, even the positions are not equally spaced in time. The $\Delta t$ used by the algorithm at every time step of the simulation is plotted in Fig. \ref{fig:ode45_timestep}.
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q10_ode45_timestep.tex}
+\caption{The $\Delta t$ used by the \texttt{ode45} Matlab routine at different $t$ is plotted. The oscillator is subjected only to the spring force. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$.}
+\label{fig:ode45_timestep}
+\end{figure}
+
+As can be seen from the figure the $\Delta t$ at a given time $t$ is not constant, but rather increases by 3 orders of magnitude. The initial $\Delta t$ is maintained to be very small but later the dynamics is "fast-forwarded" by using larger $\Delta t$'s. 
 
 \section*{Question 11}
+To compare the 3 schemes - Euler, leap-frog and Runge-Kutta 4th order for the harmonic oscillator, we plot the energies for the three schemes. This is plotted in Fig. \ref{fig:energy_vs_time_integration_schemes_compare}.
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q11_compare_schemes_energy_vs_time.tex}
+\caption{The energy vs time for the three schemes mentioned in \textbf{Question 11} are plotted for a time step of $dt=2e-3$. The parameters used for this plot are: $m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}$.}
+\label{fig:energy_vs_time_integration_schemes_compare}
+\end{figure} 
+
+As can be observed from the figure the energy of the oscillator increases for the Euler scheme. The increase in the energy can be proven to be exponential. As for the \texttt{ode45} the energy decreases continuously. However, the energy is conserved for the Verlet leap-frog scheme for long times. 
+
+Therefore, the Euler scheme clearly under-performs and should be avoided for systems which strictly require energy conservation. To conserve energy for long times the leap-frog algorithm performs optimally. But, the leap-frog scheme is only $2^{nd}$ order accurate. The RK4 scheme as offered by the \texttt{ode45} routine in Matlab is fourth order accurate but not energy conserving. Hence, if the aim of the study is to observe the system on short times and obtain accurate results, it would be recommended to use the RK4 scheme.   
 
 \section*{Question 12}
+The friction can be formulated into a matrix form acceptable to the \texttt{ode45} algorithm. The following is the formulation:
+
+\begin{eqnarray}
+\frac{dx}{dt}=v, \\
+\frac{dv}{dt}=\frac{f}{m} &= -\omega^2 -\frac{\gamma}{m} v.
+\end{eqnarray}
+
+This can be recast into a matrix form which is acceptable to the \texttt{ode45} algorithm. The form of the equation after formulating the above equations into a matrix is given by:
+%
+\begin{equation}
+\frac{d\bm{z}}{dt} = \bm{A}\bm{z},
+\end{equation}
+%
+where,
+%
+\begin{equation}
+\bm{z} = 
+\begin{bmatrix}
+x \\
+v 
+\end{bmatrix}
+\end{equation}
+%
+\begin{equation}
+\bm{A} = 
+\begin{bmatrix}
+0 & 1 \\
+-\omega^2 & -(\gamma/m),
+\end{bmatrix}
+\end{equation}
+%
+where $\gamma$ is the friction coefficient. However, to introduce the friction coefficient into the leap-frog algorithm is not straight forward.
 
 \section*{Question 13}
 
@@ -102,4 +269,7 @@ The oscillator has been simulated in MATLAB.
 \section*{Advanced Question a}
 
 \section*{Advanced Question b}
+
+\section*{Appendix}
+
 \end{document}
