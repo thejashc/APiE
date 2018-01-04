@@ -4,6 +4,7 @@
 \usepackage{color}
 \usepackage{bm}
 %\usepackage{epstopdf}
+\usepackage{fullpage}
 
 \graphicspath{{../plots/}}
 
@@ -227,11 +228,12 @@ As can be observed from the figure the energy of the oscillator increases for th
 Therefore, the Euler scheme clearly under-performs and should be avoided for systems which strictly require energy conservation. To conserve energy for long times the leap-frog algorithm performs optimally. But, the leap-frog scheme is only $2^{nd}$ order accurate. The RK4 scheme as offered by the \texttt{ode45} routine in Matlab is fourth order accurate but not energy conserving. Hence, if the aim of the study is to observe the system on short times and obtain accurate results, it would be recommended to use the RK4 scheme.   
 
 \section*{Question 12}
+\subsection*{RK4 - \texttt{ode45}}
 The friction can be formulated into a matrix form acceptable to the \texttt{ode45} algorithm. The following is the formulation:
 
 \begin{eqnarray}
 \frac{dx}{dt}=v, \\
-\frac{dv}{dt}=\frac{f}{m} &= -\omega^2 -\frac{\gamma}{m} v.
+\frac{dv}{dt}=\frac{f}{m} &= -\omega_{0}^2 -\frac{\gamma}{m} v.
 \end{eqnarray}
 
 This can be recast into a matrix form which is acceptable to the \texttt{ode45} algorithm. The form of the equation after formulating the above equations into a matrix is given by:
@@ -254,19 +256,178 @@ v
 \bm{A} = 
 \begin{bmatrix}
 0 & 1 \\
--\omega^2 & -(\gamma/m),
+-\omega_{0}^2 & -(\gamma/m),
 \end{bmatrix}
 \end{equation}
 %
-where $\gamma$ is the friction coefficient. However, to introduce the friction coefficient into the leap-frog algorithm is not straight forward.
+where $\gamma$ is the friction coefficient. 
+
+\subsection*{Verlet leap-frog}
+The presence of friction is incorporated into the scheme by accounting for the fact that the force is velocity dependent instead of being just position dependent. The modification for the scheme is as follows:
+%
+\begin{equation*}
+w[i+1] = w[i] + f[i]\frac{\Delta t}{m},
+\end{equation*}
+%
+now, the force $f[i]$ is both position and velocity dependent. Substituting for the force gives us:
+%
+\begin{equation*}
+w[i+1] = w[i] + \frac{\Delta t}{m}( -m\omega_{0}^2 x[i] - \gamma v[i] ).
+\end{equation*} 
+%
+The velocity $v[i]$ is the velocity at the integral time step and is given by $v[i] = \frac{1}{2} ( w[i] + w[i+1] )$.\footnote{This is equivalent to $v(t) = \frac{1}{2} ( v(t + \frac{\Delta t}{2} ) + v(t - \frac{\Delta t}{2} ) )$ } Substituting for $v[i]$ and re-arranging terms finally gives us:
+%
+\begin{equation}
+w[i+1] = a_{1}w[i] + a_{2},
+\end{equation}
+%
+where,
+%
+\begin{eqnarray}
+a_{1} &= \frac{1 - \frac{\gamma \Delta t}{2m}}{1 + \frac{\gamma \Delta t}{2m} }, \\
+a_{2} &= -\frac{\omega_{0}^2 x[i] \Delta t}{1 + \frac{\gamma \Delta t}{2m}}.
+\end{eqnarray}
+%
+The position is updated in the normal way, i.e. using the value of $w[i+1]$. It is given by:
+\begin{equation}
+x[i+1] = x[i] + w[i+1]\Delta t.
+\end{equation}
+
+We now asses the performance of both the schemes. 
+
+\subsection*{Performance}
+Analytical solution for the position and velocity can be obtained for the oscillator subjected to friction. Hence, the numerics can be checked against the the analytical solution. The position and the energy are compared in Fig. \ref{fig:ode45_vs_VerletLF_friction}. 
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q12_ode45_vs_verletLF_position_vs_time.tex}
+\input{../plots/q12_ode45_vs_verletLF_energy_vs_time.tex}
+\caption{The position $x(t)$ and energy $E(t)$ is plotted against time for two different schemes: (1) RK4, (2) Verlet leap-frog. The two schemes are compared against the analytical solution for the oscillator in the presence of friction. The parameters used for this simulation are:$m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}, \gamma=0.2\ \mathrm{kg/s}$.}
+\label{fig:ode45_vs_VerletLF_friction}
+\end{figure} 
+
+The amplitude of the oscillator as a function of time continuously decreases about the mean position $x=0$. In addition the frequency of the oscillator is also altered due to the presence of friction. 
+As can be seen from the figure both the schemes excellently predict position when compared against the analytical solution. Similarly, the total energy is also captured equally well by the two schemes. The energy initially has a oscillations of larger magnitude about the decaying exponential. As time progresses the amplitude about the decaying exponential decreases. 
 
 \section*{Question 13}
+As can be seen from Fig. \ref{fig:energy_interpretation} the energy continuously decreases due to the presence of friction. The analytical expression obtained for the decay in the energy can be obtained. 
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q13_ode45_vs_verletLF_energy_decay.tex}
+\caption{The energy $E(t)$ is plotted against time for the RK4 scheme. The analytical solution is plotted along with the decaying exponential with a characteristic time $\tau = \frac{1}{2\alpha}$. It is plotted for a total time of 20 periods. The parameters used for this simulation are:$m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}, \gamma=0.2\ \mathrm{kg/s}$.}
+\label{fig:energy_interpretation}
+\end{figure} 
+
+The expression for the energy is given by:
+%
+\begin{equation}
+E(t) = E_{0}(x_{0}, v_{0})*g(\omega', t, \alpha)*\exp(-2\alpha t),
+\end{equation}
+%
+where $E_{0}(x_{0}, v_{0})$ is the initial energy as a function of initial velocity and position, $g(\sin(\omega, \alpha, t)$ is a function containing the sinusoidal contributions to the energy and $\alpha = \frac{\gamma}{2m}$ where $\gamma$ is the friction coefficient. In addition, $\omega'=\sqrt{\omega_{0}^2 - \alpha^2}$ and hence is not equal to the natural frequency of the undamped harmonic oscillator. As can be seen from the equation the typical decay time $\tau = \frac{1}{2\alpha}$. This can be confirmed by plotting the exponential with this decay time. This is plotted in Fig. \ref{fig:energy_interpretation}. 
 
 \section*{Question 14}
+The addition of the driving force is only an extension of \textbf{Question 12}. It has to be noted that the frequency of forcing $\omega$ is not the same as the natural frequency of the harmonic oscillator $\omega_{0}$.
+\subsection*{RK4 - \texttt{ode45}}
+The friction and forcing can be formulated into a matrix form acceptable to the \texttt{ode45} algorithm. The following is the formulation:
+
+\begin{eqnarray}
+\frac{dx}{dt}=v, \\
+\frac{dv}{dt}=\frac{f}{m} &= -\omega_{0}^2 -\frac{\gamma}{m} v + \frac{F}{m}\cos(\omega t).
+\end{eqnarray}
+
+This can be recast into a matrix form which is acceptable to the \texttt{ode45} algorithm. The form of the equation after formulating the above equations into a matrix is given by:
+%
+\begin{equation}
+\frac{d\bm{z}}{dt} = \bm{A}\bm{z} + \bm{B},
+\end{equation}
+%
+where,
+%
+\begin{equation}
+\bm{z} = 
+\begin{bmatrix}
+x \\
+v 
+\end{bmatrix}
+\end{equation}
+%
+\begin{equation}
+\bm{A} = 
+\begin{bmatrix}
+0 & 1 \\
+-\omega^2 & -(\gamma/m)
+\end{bmatrix}
+\end{equation}
+%
+\begin{equation}
+\bm{B} = 
+\begin{bmatrix}
+0 \\
+F/m
+\end{bmatrix}
+\end{equation}
+where $\gamma$ is the friction coefficient and $F$ is the amplitude of the forcing. 
+
+\subsection*{Verlet leap-frog}
+The presence of forcing is incorporated into the scheme by adding it as an additional constant in the already present Verlet leap-frog scheme. The modification for the scheme is as follows:
+%
+\begin{equation*}
+w[i+1] = w[i] + f[i]\frac{\Delta t}{m},
+\end{equation*}
+%
+now, the force $f[i]$ is both position and velocity dependent. Substituting for the force gives us:
+%
+\begin{equation*}
+w[i+1] = w[i] + \frac{\Delta t}{m}( -m\omega^2 x[i] - \gamma v[i] + F\cos(\omega t) ).
+\end{equation*} 
+%
+The velocity $v[i]$ is the velocity at the integral time step and is given by $v[i] = \frac{1}{2} ( w[i] + w[i+1] )$.\footnote{This is equivalent to $v(t) = \frac{1}{2} ( v(t + \frac{\Delta t}{2} ) + v(t - \frac{\Delta t}{2} ) )$ } Substituting for $v[i]$ and re-arranging terms finally gives us:
+%
+\begin{equation}
+w[i+1] = a_{1}w[i] + a_{2},
+\end{equation}
+%
+where,
+%
+\begin{eqnarray}
+a_{1} =& 1, \\
+a_{2} =& \frac{\Delta t}{m}( -m\omega^2 x[i] + F\cos(\omega t) ).
+\end{eqnarray}
+%
+The position is updated in the normal way, i.e. using the value of $w[i+1]$. It is given by:
+\begin{equation}
+x[i+1] = x[i] + w[i+1]\Delta t.
+\end{equation}
 
 \section*{Question 15}
+The position vs time for an oscillator subjected to forcing and friction is plotted in Fig. \ref{fig:position_vs_time_friction_forcing}. As can be observed in Fig. \ref{fig:position_vs_time_friction_forcing}, the transient behavior is characterized by a decaying amplitude settling towards a steady state long time behavior. 
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/q15_verletLF_position_vs_time.tex}
+\input{../plots/q15_verletLF_position_vs_time_transient.tex}
+\caption{The position $x(t)$ is plotted against time for the Verlet leap-frog scheme with forcing and friction present. The solution from the scheme is compared against the analytical solution. The parameters used for this simulation are:$m=2\ \mathrm{kg}$, $k=5\ \mathrm{N/m}, \gamma=0.2\ \mathrm{kg/s}$, $F=1\ \mathrm{kg m/s^2}$. The figure below is a magnification of the above plot till the value $t=40$ (represented by the blue line).}
+\label{fig:position_vs_time_friction_forcing}
+\end{figure} 
+
+As can be seen in the figure the position signal $x(t)$ contains two different frequencies. One of the frequency corresponds to the natural frequency. This natural frequency dampens out completely. On the other hand, the frequency due to the external forcing survives, as expected, and equals the frequency of the steady state solution. However, the amplitude of the steady state motion is dependent on the value of the friction co-efficient $\gamma$ present in the system. 
+
+Now, when the system is simulated for several values of $F$ and $\omega$ we can observe that the amplitude of the steady state signal increases as the value of $F$ increases, given that the value of the $\gamma$ and $\omega$ are held constant. However, as the value of $F$ and $\gamma$ are both varied we observe the following:
+
+\begin{figure}
+\centering
+\input{•}
+
+\end{figure}
 
 \section*{Advanced Question a}
+
+\begin{figure}[!htb]
+\centering
+\input{../plots/log_A_f_vs_log_omg.tex}
+\end{figure} 
 
 \section*{Advanced Question b}
 
