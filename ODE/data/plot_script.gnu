@@ -154,29 +154,123 @@ plot 'q11_ode45_energy_vs_time.dat' u ($1/tp):($4)  w l lc 'red' t'RK4',\
 
 reset
 
-# Question 15
+# Question 12
+# scheme comparison for case of friction -- position
+load "config.plt"
+
+set output "../plots/q12_ode45_vs_verletLF_position_vs_time.tex"
+
+set xlabel "$t$"
+set ylabel "$x(t)$"
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+plot 'q12_ode45_position_vs_time.dat' u 1:2  every 100 w p lc 'red' t'RK4',\
+     'q12_verletLF_position_vs_time.dat' u 1:2 every 100 w p lc 'blue' t'Verlet leap-frog',\
+     pos_fr(x) w l lc 'black' t'Analytical solution'
+
+reset
+
+# scheme comparison for case of friction -- position
+load "config.plt"
+
+set output "../plots/q12_ode45_vs_verletLF_energy_vs_time.tex"
+
+set xlabel "$t$"
+set ylabel "$E_{tot}(t)$"
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+plot 'q12_ode45_energy_vs_time.dat' u 1:2  every 200 w p lc 'red' t'RK4',\
+     'q12_verletLF_energy_vs_time.dat' u 1:2 every 200 w p lc 'blue' t'Verlet leap-frog',\
+     energy_fr(x) w l lc 'black' t'Analytical solution'
+
+reset
+
+# Question 13
+# energy decay interpretation
+load "config.plt"
+
+set output "../plots/q13_ode45_vs_verletLF_energy_decay.tex"
+set xlabel "$t$"
+set ylabel "$E_{tot}(t)$"
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+plot 'q12_ode45_energy_vs_time.dat' u 1:2  every 200 w p lc 'red' t'RK4',\
+     energy_fr(x) w l lc 'black' lw 2 t'Analytical solution',\
+     energy_fr(0)*exp(-x/tau) w l lc 'violet' lw 2 t'$\exp(-t/\tau)$'
+
+reset
+
+# Question ecay interpretation
+# position vs time for the forcing + friction case
+load "config.plt"
+
+set output "../plots/q15_verletLF_position_vs_time.tex"
+set xlabel "$t$"
+set ylabel "$x(t)$"
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+set arrow from 40.0,-1.5 to 40.0,1.5 nohead lc 'blue' linetype -10 dashtype 1 lw 3.5
+
+plot 'q15_verletLF_position_vs_time.dat' u 1:2  every 1 w l linetype 10 dashtype 1 lw 3.5 lc 'red' t'Verlet leap-frog',\
+     pos_fr_f(x) w l lc 'black' lw 2 t'asymptotic solution (long time)',\
+     fmag w l lc 'green' linetype 10 dashtype 3 lw 3.5 notitle,\
+     -1.0*fmag w l lc 'green' linetype 10 dashtype 3 lw 3.5 notitle
+   
+reset
+# position vs time for the forcing + friction case -- transient
+load "config.plt"
+
+set output "../plots/q15_verletLF_position_vs_time_transient.tex"
+set xlabel "$t$"
+set ylabel "$x(t)$"
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+
+plot[0:40] 'q15_verletLF_position_vs_time.dat' u 1:2  every 1 w l linetype 10 dashtype 1 lw 3.5 lc 'red' t'Verlet leap-frog',\
+     pos_fr_f(x) w l lc 'black' lw 2 t'asymptotic solution (long time)',\
+     fmag w l lc 'green' linetype 10 dashtype 3 lw 3.5 notitle,\
+     -1.0*fmag w l lc 'green' linetype 10 dashtype 3 lw 3.5 notitle
+   
+reset
+
+# Question Appendix A
 load "config.plt"
 set output "../plots/log_A_f_vs_log_omg.tex"
 
-set xlabel "{/Symbol w}"
-set ylabel "A/f"
+set xlabel '$\omega$'
+set ylabel '$\frac{A}{f}$'
 set grid
 set logscale x
 set logscale y
-set key bottom left 
+set key top right
 
 # analytical solution
 A_omg(gamma, x) = (1/m)*((omg0**2 - x**2)**2 + (x*(gamma/m))**2 )**(-0.5)
 
 set sample 1e4
 
-p 'A_f_omg_omg0_gamma_0.0001_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'{/Symbol g} = 10^{-4}',\
-  'A_f_omg_omg0_gamma_0.5_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'{/Symbol g} = 0.5',\
-  'A_f_omg_omg0_gamma_1_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'{/Symbol g} = 1.0',\
-  'A_f_omg_omg0_gamma_2_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'{/Symbol g} = 2.0',\
-  [0.001:8] A_omg(1e-4, x) w l ls 1 t'{/Symbol g} = 10^{-4}, Analytical',\
-  [0.001:8] A_omg(0.5, x) w l ls 2 t'{/Symbol g} = 0.5, Analytical',\
-  [0.001:8] A_omg(1.0, x) w l ls 3 t'{/Symbol g} = 1.0, Analytical',\
-  [0.001:8] A_omg(2.0, x) w l ls 4 t'{/Symbol g} = 2.0, Analytical'
+p[0.1:10][] 'A_f_omg_omg0_gamma_0.0001_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'$\gamma = 10^{-4}$',\
+  'A_f_omg_omg0_gamma_0.5_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'$\gamma = 0.5$',\
+  'A_f_omg_omg0_gamma_1_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'$\gamma = 1.0$',\
+  'A_f_omg_omg0_gamma_2_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'$\gamma = 2.0$',\
+  [0.001:8] A_omg(1e-4, x) w l ls 1 notitle,\
+  [0.001:8] A_omg(0.5, x) w l ls 2 notitle,\
+  [0.001:8] A_omg(1.0, x) w l ls 3 notitle,\
+  [0.001:8] A_omg(2.0, x) w l ls 4 notitle
 
 reset
