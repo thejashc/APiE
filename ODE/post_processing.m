@@ -1,7 +1,7 @@
 function [] = post_processing(x,v, t)
 
 %Plotting energies, positions, velocities and phase space trajectories
-global x0 v0 omg0 k m friction gamma forcing fmag omg
+global x0 v0 omg0 k m friction gamma forcing fmag omg opt fwrite 
 
 if (friction == 0 && forcing == 0)
     
@@ -69,12 +69,20 @@ elseif (friction == 1 && forcing == 0)
     plot(t, x_anal, 'r', 'LineWidth', 2)
     hold on;
     plot(t,x,'k.');
+    legend('Analytical', 'Numerics')
+    % writing
+    if (opt == 2 && fwrite == 1)
+        csvwrite('./data/q12_verletLF_position_vs_time.dat', [t', x]);
+    elseif (opt == 4 && fwrite == 1)
+        csvwrite('./data/q12_ode45_position_vs_time.dat', [t, x]);
+    end
     
     % velocity
     figure(2)
     plot(t,v_anal, 'r', 'LineWidth', 2)
     hold on;
     plot(t,v,'k.');
+    legend('Analytical', 'Numerics')
     
     % energy
     E_init = 0.5*(k*x0^2 + m*v0^2);
@@ -82,9 +90,16 @@ elseif (friction == 1 && forcing == 0)
     kin  = 0.5 * m * v.^2;
     tot = pot + kin;
     figure(3)
-    plot(t, tot)
-    hold on;
     plot(t, E_init*exp(-(gamma/m)*t))
+    hold on;
+    plot(t, tot)
+    legend('Analytical', 'Numerics')
+    % writing
+    if (opt == 2 && fwrite == 1)
+        csvwrite('./data/q12_verletLF_energy_vs_time.dat', [t', tot]);
+    elseif (opt == 4 && fwrite == 1)
+        csvwrite('./data/q12_ode45_energy_vs_time.dat', [t, tot]);
+    end
     
 elseif (friction == 0 && forcing == 1)
     %% post processing with forcing
@@ -113,22 +128,28 @@ elseif (friction == 1 && forcing == 1)
     x_anal = Amp*cos(omg*t - phi);
     
     % write data to a file
-    fname = ['./data/A_f_omg_omg0_gamma_',num2str(gamma),'_m_',num2str(m),'.dat'];
-    fileID = fopen(fname,'a');
-    fmt = '%6f %6f %6f %6f\n';
-    fprintf(fileID,fmt, [Amp fmag omg omg0]);
-    fclose(fileID);
+    %     fname = ['./data/A_f_omg_omg0_gamma_',num2str(gamma),'_m_',num2str(m),'.dat'];
+    %     fileID = fopen(fname,'a');
+    %     fmt = '%6f %6f %6f %6f\n';
+    %     fprintf(fileID,fmt, [Amp fmag omg omg0]);
+    %     fclose(fileID);
     
     %     % position
-    %     figure(1)
-    %     plot(t,x,'k.');
-    %     hold on;
-    %     plot(t,x_anal, 'r')
-    %
-    %     % velocity
-    %     figure(2)
-    %     plot(t,v,'k.');
-    %     hold on;
+    figure(1)
+    plot(t,x,'k.');
+    hold on;
+    plot(t,x_anal, 'r')
+    % writing
+    if (opt == 2 && fwrite == 1)
+        csvwrite('./data/q15_verletLF_position_vs_time.dat', [t', x]);
+    elseif (opt == 4 && fwrite == 1)
+        csvwrite('./data/q15_ode45_position_vs_time.dat', [t, x]);
+    end
+    
+    % velocity
+    figure(2)
+    plot(t,v,'k.');
+    hold on;
 end
 
 end
