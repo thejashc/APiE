@@ -5,6 +5,8 @@
 \usepackage{bm}
 %\usepackage{epstopdf}
 \usepackage{fullpage}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \graphicspath{{../plots/}}
 
@@ -414,23 +416,85 @@ The position vs time for an oscillator subjected to forcing and friction is plot
 
 As can be seen in the figure the position signal $x(t)$ contains two different frequencies. One of the frequency corresponds to the natural frequency. This natural frequency dampens out completely. On the other hand, the frequency due to the external forcing survives, as expected, and equals the frequency of the steady state solution. However, the amplitude of the steady state motion is dependent on the value of the friction co-efficient $\gamma$ present in the system. 
 
-Now, when the system is simulated for several values of $F$ and $\omega$ we can observe that the amplitude of the steady state signal increases as the value of $F$ increases, given that the value of the $\gamma$ and $\omega$ are held constant. However, as the value of $F$ and $\gamma$ are both varied we observe the following:
+Now, when the system is simulated for several values of $F$ and $\omega$ we can observe that the amplitude of the steady state signal increases as the value of $F$ increases, given that the value of the $\gamma$ and $\omega$ are held constant. However, as the value of $F$ and $\gamma$ are both varied we observe a rich behavior of $A$: the steady state amplitude of the oscillator (response). 
 
-\begin{figure}
-\centering
-\input{•}
-
+\begin{figure}[!htb]
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \input{../plots/f_omg_contour_gamma_vary.tex}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \input{../plots/q15_max_omg_ratio_vs_F_gamma_compare.tex}
+\end{subfigure}
+\caption{The 3D plot (left) of the final amplitude (response) to the driving force (frequency and amplitude) for  $\gamma=0.5, 0.8\ \mathrm{kg/s}$ is plotted here. On the $x$-axis is the ratio of frequency of the driving force to that of the natural frequency of the oscillator: $\omega/\omega_{0}$ and the $y$-axis is the amplitude of the external forcing. The $z$-axis is the steady state amplitude of the harmonic oscillator. The plot of the value of $\omega$ at which the maximum in $A$ occurs for a given F ( $\omega_{max}$ ) is plotted against for two different values of $\gamma=0.5, 0.8\ \mathrm{kg/s}$. }
+\label{fig:q15_A_vs_omg_F}
 \end{figure}
 
+As can be seen in Fig. \ref{fig:q15_A_vs_omg_F}, for a fixed value of external forcing $F$ varying the frequency of the external forcing $\omega$ leads to an increase in the steady state amplitude $A$ until a given value $\omega = \omega_{max}$. On increasing $\omega$ further the maximum amplitude achieved then continuously decreases to a value close to 0. The interesting point to observe is that at the natural frequency $\omega_{0}$ the steady state amplitude does not diverge to $\inf$, as is the case for the undamped oscillator. Further, it is also interesting to note that the maximum amplitude $A$ does not occur at $\omega=\omega_{0}$, rather it is slightly shifted. This is illustrated in right-side plot in Fig. \ref{fig:q15_A_vs_omg_F}. For higher values of the friction co-efficient $\gamma$ the value the frequency $\omega_{max}$ at which $A$ is maximum for a given forcing $F$ is shifted away from the natural frequency. 
+
 \section*{Advanced Question a}
+Now, the values of $A/f$ can be obtained from theory and can be compared against the numerical predictions. This is illustrated in Fig. \ref{fig:AdvA_log_A_f_vs_log_omg}. This is the same representation as Fig. \ref{fig:q15_A_vs_omg_F}. The analytical expression for the steady state oscillation can be derived using the theory of $2^{\mathrm{nd}}$ order ODE's.  
 
 \begin{figure}[!htb]
 \centering
 \input{../plots/log_A_f_vs_log_omg.tex}
+\caption{The amplitude $A$ normalized by $f$ is plotted against the driving frequency $\omega$ in a log-log domain. The dots represent the numerical values and the lines represent the values from theory.}
+\label{fig:AdvA_log_A_f_vs_log_omg}
 \end{figure} 
+%
+Here only the expression is provided: 
+\begin{equation}
+\lim_{t \to \infty} x(t) = A\cos(\omega t - \phi),
+\end{equation}
+%
+where,
+\begin{eqnarray}
+A =& \frac{F}{m}\frac{1}{\sqrt{ ( \omega_{0}^2 - \omega^2  )^2 +  ( \gamma\omega/m )^2 }}, \\
+\phi =& \arctan( \frac{\gamma}{m}\frac{\omega}{\omega_{0}^2 - \omega^2} )
+\end{eqnarray}
 
 \section*{Advanced Question b}
+The correctness of the three-dimensional motion of two balls connected by a spring can be checked using a few more tests in addition to the conservation of energy. The following are the other conserved quantities:
+\begin{itemize}
+\item \textbf{Linear Momentum}: Since the system of two particles are not acted upon by an external force, the total momentum of the system has to be conserved. It is instructive to look at the total momentum in the center of mass frame. Hence, the total momentum in the center of mass frame is given by:
+\begin{eqnarray}
+\bm{p}_{tot, com} =& \bm{p}_{A, com} + \bm{p}_{B, com}, \\
+\bm{p}_{tot, com} =& m_{A}\bm{v}_{A, com} + m_{B}\bm{v}_{B, com},
+\end{eqnarray}
+where $v_{A, com}$ is the velocity of particle $A$ w.r.t to the $v_{com}$ \footnote{$v_{com} = \frac{m_{A}\bm{v}_{A} + m_{B}\bm{v}_{B}}{m_{A}+m_{B}}$}. On further simplification we find that the total momentum in the center of mass frame is $\bm{0}$. Since the there is no external force the total momentum in the center of mass frame equals $\bm{0}$.  
+\item \textbf{Angular Momentum}: From Newton's second law we know that in the absence of any external torque the system conserves it's angular momentum. Hence, the total angular momentum of the system with respect to the center of mass should be constant. The equation is given by:
+\begin{eqnarray}
+\bm{L}_{tot,com} =& L_{A,com} + L_{B,com},\\
+\bm{L}_{tot,com} =& r_{A,com}\times p_{A,com} + r_{B,com}\times p_{B,com},
+\end{eqnarray}
+where the subscript $com$ refers to the qunatity with respect to the relevant center of mass quantity \footnote{For example $r_{A,com} = r_{A} - r_{com}$ refers to the position of particle A with respect to the center of mass of the two particle system}. Now, on further simplification we have:
+\begin{eqnarray}
+\bm{L}_{tot,com} = 2 \mu^2 (\bm{r}_{BA} \times \bm{v}_{BA}),
+\end{eqnarray}
+where $\bm{r}_{BA} = \bm{r}_{B} - \bm{r}_{A}$ and the same convention for the velocity. 
+\end{itemize}
 
-\section*{Appendix}
+Hence, the three quantities which have to be conserved are the energy (com frame), linear momentum (com frame) and the angular momentum (com frame). Now we plot these quantities to verify that they are conserved and hence the simulations are correct. 
+
+\begin{figure}[!htb]
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \input{../plots/Adv_b_com_energy.tex}
+\end{subfigure}%
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \input{../plots/Adv_b_com_ang_mom.tex}
+\end{subfigure}%
+\quad
+\begin{subfigure}{.5\textwidth}
+  \centering
+  \input{../plots/Adv_b_com_lin_mom.tex}
+\end{subfigure}%
+\caption{The energy, angular momentum and the linear momentum in the center of mass frame is plotted for the two particle-spring system. The parameters for the simulation are: $m_{A}=m_{B}=2\ \mathrm{kg}$, $k = 5\ \mathrm{N/m}$, $l=1\ m$ with initial conditions $\bm{r}_{A}=(0, 0, 0)\ \mathrm{m}$, $\bm{r}_{B}=(1, 1, 1)\ \mathrm{m}$ and $\bm{v}_{A}=(+0.1, +0.1, +0.1)\ \mathrm{m/s}$, $\bm{v}_{B}=(-0.1, -0.1, -0.1)\ \mathrm{m/s}$.}
+\label{fig:Adv_b}
+\end{figure}
+
+As can be seen from Fig. \ref{fig:Adv_b} the energy, angular momentum and the linear momentum throughout the simulation are conserved. Since the system was initialized with opposite but symmetrical velocities the linear and the angular momentum are $\bm{0}$. The Verlet scheme is used to integrate the equations of motion. 
 
 \end{document}
