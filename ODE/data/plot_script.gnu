@@ -248,12 +248,52 @@ plot[0:40] 'q15_verletLF_position_vs_time.dat' u 1:2  every 1 w l linetype 10 da
    
 reset
 
+# Contour for varying gamma
+load "config.plt"
+
+set output "../plots/f_omg_contour_gamma_vary.tex"
+
+set samples 2500,2500
+set isosamples 2, 7
+
+#set pm3d
+#set hidden3d
+
+set xlabel '$\omega/\omega_{0}$'
+set ylabel '$F$'
+set zlabel '$A$'
+set key top left
+set grid
+
+set xrange [1e-3:2.*omg0]
+set yrange [0:fmag]
+splot[][][0:] (y/m)*(1./( (omg0**2.0 - x**2.0)**2.0 + (x*(0.5/m))**2.0 )**0.5) w lines lc rgb '#f89441' lw 2.5 t'$\gamma/m\omega_{0} = 0.158$',\
+              (y/m)*(1./( (omg0**2.0 - x**2.0)**2.0 + (x*(0.8/m))**2.0 )**0.5) w lines lc rgb '#a82296'  lw 2.5 t'$\gamma/m\omega_{0} = 0.252$'
+
+reset
+
+# maximum omg for a given F
+load "config.plt"
+
+set output "../plots/q15_max_omg_ratio_vs_F_gamma_compare.tex"
+set ylabel '$\omega_{max}/\omega_{0}$'
+set xlabel '$F$'
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+
+plot[][0.98:1.0] 'q15_max_omg_ratio_vs_F_gamma_0_5.dat' u 1:2  every 1 w l linetype 10 dashtype 1 lw 3.5 lc rgb '#f89441' t'$\gamma/m\omega_{0} = 0.158$',\
+	   'q15_max_omg_ratio_vs_F_gamma_0_8.dat' u 1:2  every 1 w l linetype 10 dashtype 1 lw 3.5 lc rgb '#a82296' t'$\gamma/m\omega_{0} = 0.252$',\
+   
+reset
 # Question Appendix A
 load "config.plt"
 set output "../plots/log_A_f_vs_log_omg.tex"
 
 set xlabel '$\omega$'
-set ylabel '$\frac{A}{f}$'
+set ylabel '$\frac{A}{F}$'
 set grid
 set logscale x
 set logscale y
@@ -263,14 +303,65 @@ set key top right
 A_omg(gamma, x) = (1/m)*((omg0**2 - x**2)**2 + (x*(gamma/m))**2 )**(-0.5)
 
 set sample 1e4
+set arrow from omg0,1e-3 to omg0,1e4 nohead lc 'blue' linetype -10 dashtype 1 lw 2.5
+set label '$\omega = \omega_{0}$' at omg0+1.0,5e-3 center
 
-p[0.1:10][] 'A_f_omg_omg0_gamma_0.0001_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'$\gamma = 10^{-4}$',\
-  'A_f_omg_omg0_gamma_0.5_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'$\gamma = 0.5$',\
-  'A_f_omg_omg0_gamma_1_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'$\gamma = 1.0$',\
-  'A_f_omg_omg0_gamma_2_m_2.dat' u ($3):($1/$2) every 20 w p pt 7 ps 0.5 t'$\gamma = 2.0$',\
-  [0.001:8] A_omg(1e-4, x) w l ls 1 notitle,\
-  [0.001:8] A_omg(0.5, x) w l ls 2 notitle,\
-  [0.001:8] A_omg(1.0, x) w l ls 3 notitle,\
-  [0.001:8] A_omg(2.0, x) w l ls 4 notitle
+p[0.1:10][] 'A_f_omg_omg0_gamma_0.0001_m_2.dat' u ($3):($1/$2) every 30 w p pt 7 ps 0.5 lc rgb '#f89441' t'$\gamma = 10^{-4}$',\
+  'A_f_omg_omg0_gamma_0.5_m_2.dat' u ($3):($1/$2) every 30 w p pt 7 ps 0.5 lc rgb '#a82296' t'$\gamma = 0.5$',\
+  'A_f_omg_omg0_gamma_1_m_2.dat' u ($3):($1/$2) every 30 w p pt 7 ps 0.5 lc rgb '#000004'  t'$\gamma = 1.0$',\
+  'A_f_omg_omg0_gamma_2_m_2.dat' u ($3):($1/$2) every 30 w p pt 7 ps 0.5 lc 'red' t'$\gamma = 2.0$',\
+  [0.001:8] A_omg(1e-4, x) w l ls 1 lc rgb '#f89441' lw 2.5 notitle,\
+  [0.001:8] A_omg(0.5, x) w l ls 2 lc rgb '#a82296' lw 2.5 notitle,\
+  [0.001:8] A_omg(1.0, x) w l ls 3 lc rgb '#000004' lw 2.5 notitle,\
+  [0.001:8] A_omg(2.0, x) w l ls 4 lc 'red' lw 2.5 notitle
 
 reset
+
+# Question Appendix B
+# energy in the center of mass frame
+load "config.plt"
+
+set output "../plots/Adv_b_com_energy.tex"
+set ylabel '$E(t)$'
+set xlabel '$t$'
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+plot[][0:0.5] 'Adv_b_com_energy.dat' u 1:2  w l lw 3.5 lc rgb '#f89441' t'$E_{kin, com}$',\
+     'Adv_b_com_energy.dat' u 1:3  w l lw 3.5 lc rgb '#a82296' t'$E_{pot, com}$',\
+     'Adv_b_com_energy.dat' u 1:4  w l lw 3.5 lc rgb '#000004' t'$E_{tot, com}$'
+
+reset
+
+# linear momentum in the center of mass frame
+load "config.plt"
+
+set output "../plots/Adv_b_com_lin_mom.tex"
+set ylabel '$\bm{p}_{tot, com}(t)$'
+set xlabel '$t$'
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+plot 'Adv_b_com_lin_mom.dat' u 1:2  w l lw 3.5 lc rgb '#f89441' t'$p_{x, com}$',\
+     'Adv_b_com_lin_mom.dat' u 1:3  w l lw 3.5 lc rgb '#a82296' t'$p_{y, com}$',\
+     'Adv_b_com_lin_mom.dat' u 1:4  w l lw 3.5 lc rgb '#000004' t'$p_{z, com}$'
+
+reset
+# angular momentum in the center of mass frame
+load "config.plt"
+
+set output "../plots/Adv_b_com_ang_mom.tex"
+set ylabel '$\bm{L}_{tot, com}(t)$'
+set xlabel '$t$'
+set grid
+set key top right
+unset title
+set datafile separator ','
+
+plot 'Adv_b_com_ang_mom.dat' u 1:2  w l lw 3.5 lc rgb '#f89441' t'$L_{x, com}$',\
+     'Adv_b_com_ang_mom.dat' u 1:3  w l lw 3.5 lc rgb '#a82296' t'$L_{y, com}$',\
+     'Adv_b_com_ang_mom.dat' u 1:4  w l lw 3.5 lc rgb '#000004' t'$L_{z, com}$'
